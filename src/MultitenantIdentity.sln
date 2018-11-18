@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultitenantIdentity", "MultitenantIdentity\MultitenantIdentity.csproj", "{D536462B-2312-4786-B832-C6F1F4D00E1B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D536462B-2312-4786-B832-C6F1F4D00E1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D536462B-2312-4786-B832-C6F1F4D00E1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D536462B-2312-4786-B832-C6F1F4D00E1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D536462B-2312-4786-B832-C6F1F4D00E1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7196540A-6643-43E9-BE8C-5A423B6B3566}
+	EndGlobalSection
+EndGlobal
