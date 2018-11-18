@@ -8,7 +8,7 @@ namespace MultitenantApi
     {
         public Task<TenantShell<Tenant>> Get(TenantDistinguisher distinguisher)
         {
-            if (distinguisher.Uri.Port == 5000 || distinguisher.Uri.Port == 5001)
+            if (distinguisher.Uri.Port == 6000 || distinguisher.Uri.Port == 6001)
             {
                 Guid tenantId = Guid.Parse("049c8cc4-3660-41c7-92f0-85430452be22");
                 var tenant = new Tenant(tenantId, "Moogle");
@@ -18,7 +18,7 @@ namespace MultitenantApi
                 return Task.FromResult(result);
             }
 
-            if (distinguisher.Uri.Port == 5002)
+            if (distinguisher.Uri.Port == 6002)
             {
                 Guid tenantId = Guid.Parse("b17fcd22-0db1-47c0-9fef-1aa1cb09605e");
                 var tenant = new Tenant(tenantId, "Gicrosoft");
@@ -27,7 +27,7 @@ namespace MultitenantApi
             }
 
 
-            throw new NotImplementedException("Please make request on ports 5000 - 5003 to see various behaviour.");
+            throw new NotImplementedException("Please make request on ports 6000 - 6003 to see various behaviour.");
 
         }
     }
