@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Dotnettency;
@@ -49,12 +50,12 @@ namespace MultitenantApi
                     {
                         containerBuilder.WithAutofac((tenant, tenantServices) =>
                         {
-                            tenantServices.Configure<CookiePolicyOptions>(opt =>
-                            {
-                                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                                opt.CheckConsentNeeded = context => true;
-                                opt.MinimumSameSitePolicy = SameSiteMode.None;
-                            });
+                            //tenantServices.Configure<CookiePolicyOptions>(opt =>
+                            //{
+                            //    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                            //    opt.CheckConsentNeeded = context => true;
+                            //    opt.MinimumSameSitePolicy = SameSiteMode.None;
+                            //});
 
                             tenantServices.AddSingleton(_environment); // See https://github.com/aspnet/Mvc/issues/8340
                             tenantServices.AddWebEncoders();
@@ -62,14 +63,58 @@ namespace MultitenantApi
                             tenantServices.AddMvc()
                             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+                            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
                             if (tenant.Name == "Moogle")
                             {
+                                tenantServices.AddAuthentication(opt =>
+                                {
+                                    opt.DefaultScheme = "Cookies";
+                                    opt.DefaultChallengeScheme = "oidc";
+                                })
+                                 .AddCookie("Cookies", opt =>
+                                 {
 
+                                     opt.Cookie.Name = "Cookie";
+
+
+                                 })
+                                .AddOpenIdConnect("oidc", opt =>
+                                {
+                                    opt.SignInScheme = "Cookies";
+
+                                    opt.Authority = "http://localhost:5000";
+                                    opt.RequireHttpsMetadata = false;
+
+                                    opt.ClientId = "mvc";
+                                    opt.SaveTokens = true;
+                                });
                             }
                             else
                             {
+                                tenantServices.AddAuthentication(opt =>
+                                {
+                                    opt.DefaultScheme = "Cookies";
+                                    opt.DefaultChallengeScheme = "oidc";
+                                })
+                              .AddCookie("Cookies", opt =>
+                              {
 
-                         
+                                  opt.Cookie.Name = "Cookie2";
+
+
+                              })
+                              .AddOpenIdConnect("oidc", opt =>
+                              {
+                                  opt.SignInScheme = "Cookies";
+
+                                  opt.Authority = "http://localhost:5002";
+                                  opt.RequireHttpsMetadata = false;
+
+                                  opt.ClientId = "mvc2";
+                                  opt.SaveTokens = true;
+                              });
+
                             }
                         })
                         .AddPerRequestContainerMiddlewareServices() // services needed for per tenant container middleware.
@@ -91,6 +136,7 @@ namespace MultitenantApi
                                     name: "default",
                                     template: "{controller=Home}/{action=Index}/{id?}");
                             });
+
                         });
                     });
 
