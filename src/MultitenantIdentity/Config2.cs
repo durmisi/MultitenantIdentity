@@ -31,7 +31,7 @@ namespace MultitenantIdentity
                     },
 
                     // scopes that client has access to
-                    AllowedScopes = { "api1_2" }
+                    AllowedScopes = { "api2" }
                 }
             };
         }
