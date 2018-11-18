@@ -13,21 +13,7 @@ namespace MultitenantIdentity
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app = app.UseMultitenancy<Tenant>((options) =>
-            {
-                options.UsePerTenantContainers();
-                options.UsePerTenantMiddlewarePipeline();
-            });
-        }
-
+        
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             IServiceProvider serviceProvider = services.AddAspNetCoreMultiTenancy<Tenant>((options) =>
@@ -140,5 +126,21 @@ namespace MultitenantIdentity
             // When using tenant containers, must return IServiceProvider.
             return serviceProvider;
         }
-}
+
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app = app.UseMultitenancy<Tenant>((options) =>
+            {
+                options.UsePerTenantContainers();
+                options.UsePerTenantMiddlewarePipeline();
+            });
+        }
+    }
 }
