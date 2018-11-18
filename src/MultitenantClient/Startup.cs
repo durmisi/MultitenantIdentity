@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dotnettency;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,30 +10,94 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MultitenantClient;
 
-namespace MultitenantClient
+namespace MultitenantApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IHostingEnvironment _environment;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly IConfiguration _configuration;
+
+        public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory, IConfiguration configuration)
         {
-            Configuration = configuration;
+            _environment = environment;
+            _loggerFactory = loggerFactory;
+            _configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
+            // services.AddRouting();
+            services.AddMiddlewareAnalysis();
+            //  services.AddMvc();
+            services.AddWebEncoders(); // Not sure why this is necessary. See https://github.com/aspnet/Mvc/issues/8340 may not be necessary in 2.1.0
+
+            _loggerFactory.AddConsole();
+            ILogger<Startup> logger = _loggerFactory.CreateLogger<Startup>();
+
+
+            IServiceProvider serviceProvider = services.AddAspNetCoreMultiTenancy<Tenant>((options) =>
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options
+                    .InitialiseTenant<TenantShellFactory>() // factory class to load tenant when it needs to be initialised for the first time. Can use overload to provide a delegate instead.                    
+                    .ConfigureTenantContainers((containerBuilder) =>
+                    {
+                        containerBuilder.WithAutofac((tenant, tenantServices) =>
+                        {
+                            tenantServices.Configure<CookiePolicyOptions>(opt =>
+                            {
+                                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                                opt.CheckConsentNeeded = context => true;
+                                opt.MinimumSameSitePolicy = SameSiteMode.None;
+                            });
+
+                            tenantServices.AddSingleton(_environment); // See https://github.com/aspnet/Mvc/issues/8340
+                            tenantServices.AddWebEncoders();
+
+                            tenantServices.AddMvc()
+                            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+                            if (tenant.Name == "Moogle")
+                            {
+
+                            }
+                            else
+                            {
+
+                         
+                            }
+                        })
+                        .AddPerRequestContainerMiddlewareServices() // services needed for per tenant container middleware.
+                        .AddPerTenantMiddlewarePipelineServices(); // services needed for per tenant middleware pipeline.
+                    })
+                    .ConfigureTenantMiddleware((a) =>
+                    {
+                        a.OnInitialiseTenantPipeline((b, c) =>
+                        {
+                          // c.UseHttpsRedirection();
+                            c.UseStaticFiles();
+                            c.UseCookiePolicy();
+
+                            c.UseAuthentication();
+
+                            c.UseMvc(routes =>
+                            {
+                                routes.MapRoute(
+                                    name: "default",
+                                    template: "{controller=Home}/{action=Index}/{id?}");
+                            });
+                        });
+                    });
+
             });
 
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            // When using tenant containers, must return IServiceProvider.
+            return serviceProvider;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,15 +113,10 @@ namespace MultitenantClient
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-
-            app.UseMvc(routes =>
+            app = app.UseMultitenancy<Tenant>((options) =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                options.UsePerTenantContainers();
+                options.UsePerTenantMiddlewarePipeline();
             });
         }
     }
