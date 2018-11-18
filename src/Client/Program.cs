@@ -14,10 +14,20 @@ namespace Client
             var result = HttpGet(accessToken, "http://localhost:6000/identity");
             Console.WriteLine(JArray.Parse(result));
 
+            Console.WriteLine("================= Tenant 1 - Requesting a token using the password grant ==========================");
+            accessToken = RequestResourceOwnerPasswordAccessToken("http://localhost:5000", "ro.client", "secret", "alice", "password", "api1");
+            result = HttpGet(accessToken, "http://localhost:6000/identity");
+            Console.WriteLine(JArray.Parse(result));
+
+
             Console.WriteLine("================= Tenant 2 ==========================");
             var accessToken2 = GetAccessToken("http://localhost:5002", "client2", "secret", "api2");
             var result2 = HttpGet(accessToken2, "http://localhost:6002/identity");
             Console.WriteLine(JArray.Parse(result2));
+            Console.WriteLine("================= Tenant 2 - Requesting a token using the password grant ==========================");
+            accessToken = RequestResourceOwnerPasswordAccessToken("http://localhost:5002", "ro.client2", "secret", "bob", "password", "api2");
+            result = HttpGet(accessToken, "http://localhost:6002/identity");
+            Console.WriteLine(JArray.Parse(result));
 
             Console.ReadKey();
         }
@@ -58,5 +68,32 @@ namespace Client
             Console.WriteLine(tokenResponse.Json);
             return tokenResponse.AccessToken;
         }
+
+        private static string RequestResourceOwnerPasswordAccessToken(string url, string client, string secret,
+            string userName, string password,
+            string scope)
+        {
+            // discover endpoints from metadata
+            var disco = DiscoveryClient.GetAsync(url).Result;
+            if (disco.IsError)
+            {
+                Console.WriteLine(disco.Error);
+                throw new Exception(disco.Error);
+            }
+
+            // request token
+            var tokenClient = new TokenClient(disco.TokenEndpoint, client, secret);
+            var tokenResponse =  tokenClient.RequestResourceOwnerPasswordAsync(userName, password, scope).Result;
+
+            if (tokenResponse.IsError)
+            {
+                Console.WriteLine(tokenResponse.Error);
+                throw new Exception(tokenResponse.Error);
+            }
+
+            Console.WriteLine(tokenResponse.Json);
+            return tokenResponse.AccessToken;
+        }
+        
     }
 }

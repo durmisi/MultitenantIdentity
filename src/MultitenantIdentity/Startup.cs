@@ -33,7 +33,8 @@ namespace MultitenantIdentity
                                     .AddDeveloperSigningCredential()
                                     .AddInMemoryApiResources(Config.GetApiResources())
                                     .AddInMemoryPersistedGrants()
-                                    .AddInMemoryClients(Config.GetClients());
+                                    .AddInMemoryClients(Config.GetClients())
+                                    .AddTestUsers(Config.GetUsers());
 
                             }
                             else
@@ -43,7 +44,8 @@ namespace MultitenantIdentity
                                         .AddDeveloperSigningCredential()
                                         .AddInMemoryApiResources(Config2.GetApiResources())
                                         .AddInMemoryPersistedGrants()
-                                        .AddInMemoryClients(Config2.GetClients());
+                                        .AddInMemoryClients(Config2.GetClients())
+                                        .AddTestUsers(Config2.GetUsers());
                             }
 
                             //if (tenant.Name == "Moogle")
