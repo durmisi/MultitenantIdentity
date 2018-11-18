@@ -1,12 +1,23 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dotnettency" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.Container" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.HostingEnvironment" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.MiddlewarePipeline" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.Modules" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.Container" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.Container.Autofac" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.TenantFileSystem" Version="2.0.0-unstable.113" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
   </ItemGroup>
 
 </Project>
