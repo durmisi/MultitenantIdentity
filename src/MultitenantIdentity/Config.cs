@@ -81,8 +81,42 @@ namespace MultitenantIdentity
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile
                     }
+                },
+                new Client
+                {
+                    ClientId = "mvc.hybrid",
+                    ClientName = "MVC Hybrid Client",
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris           =
+                    {
+                        "http://localhost:8000/signin-oidc",
+                        "http://localhost:8001/signin-oidc",
+                        "http://localhost:8000",
+                        "http://localhost:8001",
+
+                    },
+                    PostLogoutRedirectUris =
+                    {
+                        "http://localhost:8000/signout-callback-oidc",
+                        "http://localhost:8001/signout-callback-oidc"
+                    },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "api1"
+                    },
+                    AllowAccessTokensViaBrowser=true,
+                    AllowOfflineAccess = true
                 }
-            };
+        };
         }
 
         public static List<TestUser> GetUsers()
