@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using Dotnettency;
+using IdentityServer4;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace MultitenantIdentity
 {
@@ -67,6 +69,15 @@ namespace MultitenantIdentity
                                     .AddInMemoryClients(Config.GetClients())
                                     .AddTestUsers(Config.GetUsers());
 
+                                tenantServices.AddAuthentication()
+                                        .AddGoogle("Google", opt =>
+                                        {
+                                            opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                                            opt.ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com";
+                                            opt.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
+                                        });
+
                             }
                             else
                             {
@@ -78,6 +89,22 @@ namespace MultitenantIdentity
                                         .AddInMemoryPersistedGrants()
                                         .AddInMemoryClients(Config2.GetClients())
                                         .AddTestUsers(Config2.GetUsers());
+
+                                    tenantServices.AddAuthentication()
+                                        .AddOpenIdConnect("oidc", "OpenID Connect", opt =>
+                                        {
+                                            opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                                            opt.SignOutScheme = IdentityServerConstants.SignoutScheme;
+
+                                            opt.Authority = "https://demo.identityserver.io/";
+                                            opt.ClientId = "implicit";
+
+                                            opt.TokenValidationParameters = new TokenValidationParameters
+                                            {
+                                                NameClaimType = "name",
+                                                RoleClaimType = "role"
+                                            };
+                                        });
                             }
 
                         })
