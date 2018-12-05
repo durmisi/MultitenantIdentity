@@ -64,6 +64,8 @@ namespace MultitenantIdentity
                     ClientName = "MVC Client",
                     AllowedGrantTypes = GrantTypes.Implicit,
 
+                    RequireConsent = false,
+
                     // where to redirect to after login
                     RedirectUris = {
                         "http://localhost:7000/signin-oidc",
@@ -79,7 +81,8 @@ namespace MultitenantIdentity
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "api1"
                     }
                 },
                 new Client
@@ -127,8 +130,7 @@ namespace MultitenantIdentity
                 {
                     SubjectId = "1",
                     Username = "alice",
-                    Password = "password",
-
+                    Password = "supe8R1WrIs1U&H+T!11",
                     Claims = new []
                     {
                         new Claim("name", "Alice"),
@@ -139,8 +141,7 @@ namespace MultitenantIdentity
                 {
                     SubjectId = "2",
                     Username = "bob",
-                    Password = "password",
-
+                    Password = "supe8R1WrIs1U&H+T!11",
                     Claims = new []
                     {
                         new Claim("name", "Bob"),

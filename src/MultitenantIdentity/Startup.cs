@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
+using System.Reflection;
 using Dotnettency;
 using IdentityServer4;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using MultitenantIdentity.Data;
 
 namespace MultitenantIdentity
 {
     public class Startup
     {
-
         private readonly IHostingEnvironment _environment;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IConfiguration _configuration;
@@ -29,7 +27,6 @@ namespace MultitenantIdentity
             _loggerFactory = loggerFactory;
             _configuration = configuration;
         }
-
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
@@ -53,59 +50,72 @@ namespace MultitenantIdentity
                             tenantServices.AddSingleton(_environment); // See https://github.com/aspnet/Mvc/issues/8340
                             tenantServices.AddWebEncoders();
 
+                            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+                            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
+                            tenantServices.AddDbContext<ApplicationDbContext>(opt =>
+                                opt.UseSqlServer(connectionString));
+
+                            tenantServices.AddIdentity<ApplicationUser, ApplicationRole>()
+                                .AddEntityFrameworkStores<ApplicationDbContext>()
+                                .AddDefaultTokenProviders();
+
+                            // Add application services.
+                            //tenantServices.AddTransient<IEmailSender, EmailSender>();
+
                             tenantServices.AddMvc()
-                            .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                                          .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-                            tenantServices.AddMvc();
 
-                            if (tenant.Name == "Moogle")
-                            {
-                                // configure identity server with in-memory stores, keys, clients and resources
-                                tenantServices.AddIdentityServer()
-                                    .AddDeveloperSigningCredential()
-                                    .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                                    .AddInMemoryApiResources(Config.GetApiResources())
-                                    .AddInMemoryPersistedGrants()
-                                    .AddInMemoryClients(Config.GetClients())
-                                    .AddTestUsers(Config.GetUsers());
+                            // configure identity server with in-memory stores, keys, clients and resources
+                            tenantServices.AddIdentityServer()
+                                .AddDeveloperSigningCredential()
+                                .AddInMemoryIdentityResources(Config.GetIdentityResources())
+                                .AddInMemoryApiResources(Config.GetApiResources())
+                                .AddInMemoryPersistedGrants()
+                                .AddInMemoryClients(Config.GetClients())
+                                .AddConfigurationStore(opt =>
+                                {
+                                    opt.ConfigureDbContext = builder =>
+                                        builder.UseSqlServer(connectionString,
+                                            sql => sql.MigrationsAssembly(migrationsAssembly));
+                                })
+                                // this adds the operational data from DB (codes, tokens, consents)
+                                .AddOperationalStore(opt =>
+                                {
+                                    opt.ConfigureDbContext = builder =>
+                                        builder.UseSqlServer(connectionString,
+                                            sql => sql.MigrationsAssembly(migrationsAssembly));
 
-                                tenantServices.AddAuthentication()
-                                        .AddGoogle("Google", opt =>
+                                    // this enables automatic token cleanup. this is optional.
+                                    opt.EnableTokenCleanup = true;
+                                    opt.TokenCleanupInterval = 30;
+                                })
+                                .AddAspNetIdentity<ApplicationUser>()
+                                ;
+
+                            tenantServices.AddAuthentication()
+                                    .AddGoogle("Google", opt =>
+                                    {
+                                        opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                                        opt.ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com";
+                                        opt.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
+                                    })
+                                    .AddOpenIdConnect("oidc", "OpenID Connect", opt =>
+                                    {
+                                        opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                                        opt.SignOutScheme = IdentityServerConstants.SignoutScheme;
+
+                                        opt.Authority = "https://demo.identityserver.io/";
+                                        opt.ClientId = "implicit";
+
+                                        opt.TokenValidationParameters = new TokenValidationParameters
                                         {
-                                            opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-
-                                            opt.ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com";
-                                            opt.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
-                                        });
-
-                            }
-                            else
-                            {
-                                    // configure identity server with in-memory stores, keys, clients and resources
-                                    tenantServices.AddIdentityServer()
-                                        .AddDeveloperSigningCredential()
-                                        .AddInMemoryIdentityResources(Config2.GetIdentityResources())
-                                        .AddInMemoryApiResources(Config2.GetApiResources())
-                                        .AddInMemoryPersistedGrants()
-                                        .AddInMemoryClients(Config2.GetClients())
-                                        .AddTestUsers(Config2.GetUsers());
-
-                                    tenantServices.AddAuthentication()
-                                        .AddOpenIdConnect("oidc", "OpenID Connect", opt =>
-                                        {
-                                            opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                                            opt.SignOutScheme = IdentityServerConstants.SignoutScheme;
-
-                                            opt.Authority = "https://demo.identityserver.io/";
-                                            opt.ClientId = "implicit";
-
-                                            opt.TokenValidationParameters = new TokenValidationParameters
-                                            {
-                                                NameClaimType = "name",
-                                                RoleClaimType = "role"
-                                            };
-                                        });
-                            }
+                                            NameClaimType = "name",
+                                            RoleClaimType = "role"
+                                        };
+                                    });
 
                         })
                         .AddPerRequestContainerMiddlewareServices() // services needed for per tenant container middleware.
@@ -115,6 +125,9 @@ namespace MultitenantIdentity
                     {
                         a.OnInitialiseTenantPipeline((b, c) =>
                         {
+
+                            IdentityServerDatabaseInitialization.InitializeDatabase(c);
+
                             //c.UseDeveloperExceptionPage();
                             c.UseStaticFiles();
 
@@ -127,14 +140,14 @@ namespace MultitenantIdentity
                                     template: "{controller=Home}/{action=Index}/{id?}");
                             });
 
-                           
+
                         });
                     });
 
             });
 
-            // When using tenant containers, must return IServiceProvider.
-            return serviceProvider;
+             // When using tenant containers, must return IServiceProvider.
+             return serviceProvider;
         }
 
 
@@ -152,5 +165,6 @@ namespace MultitenantIdentity
                 options.UsePerTenantMiddlewarePipeline();
             });
         }
+
     }
 }
