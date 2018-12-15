@@ -5,8 +5,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="1.13.0" />
+    <PackageReference Include="Dapper" Version="1.50.5" />
+    <PackageReference Include="Dotnettency" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.Container" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.HostingEnvironment" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.MiddlewarePipeline" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.AspNetCore.Modules" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.Container" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.Container.Autofac" Version="2.0.0-unstable.113" />
+    <PackageReference Include="Dotnettency.TenantFileSystem" Version="2.0.0-unstable.113" />
+    <PackageReference Include="FluentNHibernate" Version="2.1.2" />
+
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="NHibernate" Version="5.2.1" />
   </ItemGroup>
 
 

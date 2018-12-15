@@ -1,15 +1,13 @@
-﻿using IdentityServer4.EntityFramework.DbContexts;
+﻿using System;
+using System.Linq;
+using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using MultitenantIdentity.Data;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Security.Claims;
 
-namespace MultitenantIdentity
+namespace MultitenantIdentity.Data
 {
     public static class IdentityServerDatabaseInitialization
     {

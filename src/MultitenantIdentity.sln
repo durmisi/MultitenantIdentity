@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultitenantHybridClient", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tenants", "Tenants", "{E91C355A-6CDE-48D2-97FF-6D1F18DD197F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TenantsWeb", "TenantsWeb\TenantsWeb.csproj", "{5C750990-C2E8-4781-99DC-3229B965CBF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tenants.Web", "Tenants\Tenants.Web\Tenants.Web.csproj", "{3E02F889-EA9A-48F0-954F-BFB211147EF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,16 +43,16 @@ Global
 		{5FD8EA11-C419-4A4E-9506-DE257C4C429E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FD8EA11-C419-4A4E-9506-DE257C4C429E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD8EA11-C419-4A4E-9506-DE257C4C429E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C750990-C2E8-4781-99DC-3229B965CBF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C750990-C2E8-4781-99DC-3229B965CBF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C750990-C2E8-4781-99DC-3229B965CBF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C750990-C2E8-4781-99DC-3229B965CBF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E02F889-EA9A-48F0-954F-BFB211147EF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E02F889-EA9A-48F0-954F-BFB211147EF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E02F889-EA9A-48F0-954F-BFB211147EF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E02F889-EA9A-48F0-954F-BFB211147EF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5C750990-C2E8-4781-99DC-3229B965CBF1} = {E91C355A-6CDE-48D2-97FF-6D1F18DD197F}
+		{3E02F889-EA9A-48F0-954F-BFB211147EF4} = {E91C355A-6CDE-48D2-97FF-6D1F18DD197F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7196540A-6643-43E9-BE8C-5A423B6B3566}
