@@ -4,7 +4,7 @@ namespace Tenants.Web.Logic.Dtos
 {
     public sealed class TenantDto
     {
-        public long Id { get; set; }
+        public long TenantId { get; set; }
 
         public string Name { get; set; }
 

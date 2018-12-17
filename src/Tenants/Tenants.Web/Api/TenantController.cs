@@ -15,7 +15,7 @@ namespace Tenants.Web.Api
             _messages = messages;
         }
 
-        [HttpGet("")]
+        [HttpGet()]
         public IActionResult GetList()
         {
             var list = _messages.Dispatch(new GetListQuery());
@@ -26,6 +26,15 @@ namespace Tenants.Web.Api
         public IActionResult Register([FromBody] RegisterTenantDto dto)
         {
             var command = new RegisterCommand(dto.Name, dto.TenantGuid);
+            var result = _messages.Dispatch(command);
+            return FromResult(result);
+        }
+        
+
+        [HttpPost("services/add")]
+        public IActionResult AddService([FromBody] AddServiceDto dto)
+        {
+            var command = new AddServiceCommand(dto.TenantId, dto.AppServiceId, dto.HostName);
             var result = _messages.Dispatch(command);
             return FromResult(result);
         }

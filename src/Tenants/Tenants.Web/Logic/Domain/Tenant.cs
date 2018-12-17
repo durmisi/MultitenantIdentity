@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
 using Tenants.Web.Logic.Base;
 
 namespace Tenants.Web.Logic.Domain
@@ -8,10 +11,10 @@ namespace Tenants.Web.Logic.Domain
         private string _name;
         private bool _isActive;
         private Guid _tenantGuid;
-
+        private IList<TenantService> _tenantServices;
         protected Tenant()
         {
-
+            _tenantServices = new List<TenantService>();
         }
 
         public Tenant(string name, Guid tenantGuid)
@@ -28,8 +31,6 @@ namespace Tenants.Web.Logic.Domain
             _tenantGuid = tenantGuid;
         }
 
-
-
         public virtual string Name
         {
             get => _name;
@@ -45,5 +46,25 @@ namespace Tenants.Web.Logic.Domain
             get => _isActive;
             set => _isActive = value;
         }
+
+        public virtual IEnumerable<TenantService> TenantServices
+        {
+            get { return _tenantServices; }
+        }
+
+        public virtual void AddService(AppService service, string hostName)
+        {
+            if (service == null) throw new ArgumentNullException(nameof(service));
+
+            var tenantService = new TenantService(this, appService: service, hostName: hostName);
+
+            if (TenantServices.Any(x => x.AppService.Name == service.Name && x.HostName == hostName))
+            {
+                throw new InvalidOperationException("App Service is already registered for this Tenant.");
+            }
+
+            _tenantServices.Add(tenantService);
+        }
+
     }
 }

@@ -24,7 +24,7 @@ namespace Tenants.Web.Logic.Services
             {
                 string sql = @"
                  
-                            SELECT  [Id]
+                            SELECT  [TenantId]
                                   ,[TenantGuid]
                                   ,[Name]
                                   ,[IsActive]

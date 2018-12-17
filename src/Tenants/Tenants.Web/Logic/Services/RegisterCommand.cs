@@ -34,6 +34,13 @@ namespace Tenants.Web.Logic.Services
             {
                 var unitOfWork = new UnitOfWork(_sessionFactory);
                 var tenantRepository = new TenantRepository(unitOfWork);
+
+                var tenant0 = tenantRepository.GetByName(command.Name);
+                if (tenant0 != null)
+                {
+                    return  Result.Fail($"Tenant with name {command.Name} already exist.");
+                }
+                
                 var tenant = new Tenant(command.Name, command.TenantGuid);
 
                 tenantRepository.Save(tenant);
