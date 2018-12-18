@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using CorrelationId;
 using Dotnettency;
 using IdentityServer4;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MultitenantIdentity.Data;
+using Tenants.Web.Client;
+using Tenants.Web.Client.Options;
+using Tenants.Web.Client.Framework;
 
 namespace MultitenantIdentity
 {
@@ -20,8 +24,9 @@ namespace MultitenantIdentity
         private readonly IHostingEnvironment _environment;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IConfiguration _configuration;
-
-        public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory, IConfiguration configuration)
+        
+        public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory, IConfiguration configuration
+            )
         {
             _environment = environment;
             _loggerFactory = loggerFactory;
@@ -38,6 +43,15 @@ namespace MultitenantIdentity
             _loggerFactory.AddConsole();
             ILogger<Startup> logger = _loggerFactory.CreateLogger<Startup>();
 
+            services.AddCorrelationId(); // Add Correlation ID support to ASP.NET Core
+
+            services
+                .AddPolicies(this._configuration) // Setup Polly policies.
+                .AddHttpClient<ITenantsClient, TenantsClient, TenantsClientOptions>(this._configuration, "TenantsClient");
+
+            //var serviceProvider1 = services.BuildServiceProvider();
+            //var tenantsClient = serviceProvider1.GetRequiredService<ITenantsClient>();
+            //var tenants = tenantsClient.GetTenants().Result;
 
             IServiceProvider serviceProvider = services.AddAspNetCoreMultiTenancy<Tenant>((options) =>
             {
@@ -47,6 +61,8 @@ namespace MultitenantIdentity
                     {
                         containerBuilder.WithAutofac((tenant, tenantServices) =>
                         {
+                          
+
                             tenantServices.AddSingleton(_environment); // See https://github.com/aspnet/Mvc/issues/8340
                             tenantServices.AddWebEncoders();
 
@@ -154,6 +170,8 @@ namespace MultitenantIdentity
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseCorrelationId();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

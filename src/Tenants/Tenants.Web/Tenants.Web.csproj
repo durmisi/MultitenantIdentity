@@ -100,8 +100,4 @@
     <UpToDateCheckInput Remove="Pages\Error.cshtml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
