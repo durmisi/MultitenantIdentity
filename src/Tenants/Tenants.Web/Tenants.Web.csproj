@@ -12,8 +12,13 @@
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Projects\MultitenantIdentity\src\Tenants\Tenants.Web\Tenants.Web.xml</DocumentationFile>
+    <NoWarn>1701;1702; 1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions" Version="1.13.0" />
+    <PackageReference Include="CSharpFunctionalExtensions" Version="1.14.0" />
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Dotnettency" Version="2.0.0-unstable.113" />
     <PackageReference Include="Dotnettency.AspNetCore" Version="2.0.0-unstable.113" />
@@ -30,6 +35,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
     <PackageReference Include="NHibernate" Version="5.2.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
 
