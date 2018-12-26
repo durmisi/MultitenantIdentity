@@ -17,7 +17,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tenants", "Tenants", "{E91C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenants.Web", "Tenants\Tenants.Web\Tenants.Web.csproj", "{3E02F889-EA9A-48F0-954F-BFB211147EF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tenants.Web.Client", "Tenants\Tenants.Web.Client\Tenants.Web.Client.csproj", "{AA42E2D8-0C15-4CB2-A58C-CBFDDC44780F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenants.Web.Client", "Tenants\Tenants.Web.Client\Tenants.Web.Client.csproj", "{AA42E2D8-0C15-4CB2-A58C-CBFDDC44780F}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{BA22B476-467A-4317-B763-739F1104E2CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{AA42E2D8-0C15-4CB2-A58C-CBFDDC44780F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA42E2D8-0C15-4CB2-A58C-CBFDDC44780F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA42E2D8-0C15-4CB2-A58C-CBFDDC44780F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA22B476-467A-4317-B763-739F1104E2CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA22B476-467A-4317-B763-739F1104E2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA22B476-467A-4317-B763-739F1104E2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA22B476-467A-4317-B763-739F1104E2CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

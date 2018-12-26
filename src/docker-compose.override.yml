@@ -1,0 +1,17 @@
+version: '3.6'
+
+services:
+  tenants.web:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+;http://+ # Default ports are 80 and 443
+      - ASPNETCORE_HTTPS_PORT=44333 # This tells the UseHttpsRedirection middleware where to redirect
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=P@ssw0rd
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/root/.aspnet/https/Tenants.Web.pfx
+    ports:
+      - "44332:80"
+      - "44333:443"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      

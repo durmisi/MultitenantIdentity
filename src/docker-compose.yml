@@ -1,0 +1,14 @@
+version: '3.6'
+
+services:
+  tenants.web:
+    image: ${DOCKER_REGISTRY-}tenantsweb
+    build:
+      context: .
+      dockerfile: Tenants/Tenants.Web/Dockerfile
+    networks:
+      - app-network    
+      
+networks:
+  app-network:
+    driver: bridge
