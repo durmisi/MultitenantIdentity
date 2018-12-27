@@ -9,6 +9,12 @@ services:
     networks:
       - app-network    
       
+  multitenantidentity:
+    image: ${DOCKER_REGISTRY-}multitenantidentity
+    build:
+      context: .
+      dockerfile: MultitenantIdentity/Dockerfile
+
 networks:
   app-network:
     driver: bridge
