@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Tenants.Web.Client;
 using Tenants.Web.Logic.Dtos;
 
@@ -22,14 +23,18 @@ namespace MultitenantIdentity
         {
             var activeTenants = GetTenants();
 
-            foreach (var activeTenant in activeTenants)
+            foreach (var tenant in activeTenants)
             {
-                if(!isValidTenantHost(activeTenant.Hosts, distinguisher.Uri))
+                if(!isValidTenantHost(tenant.Hosts, distinguisher.Uri))
                     continue;
 
-                var tenant = new Tenant(activeTenant.TenantGuid, activeTenant.TenantName);
-                var result = new TenantShell<Tenant>(tenant, 
-                    activeTenant.Hosts
+                var identityServerTenant = new Tenant(tenant.TenantGuid, tenant.TenantName)
+                {
+                    Configuration = JsonConvert.DeserializeObject<IdentityServerConfiguration>(tenant.Configuration)
+                };
+
+                var result = new TenantShell<Tenant>(identityServerTenant,
+                    tenant.Hosts
                         .Select(host => new TenantDistinguisher(new Uri(host)))
                         .ToArray()
                 );
@@ -38,7 +43,6 @@ namespace MultitenantIdentity
             }
 
             throw new NotImplementedException("Please make request on ports 5000 - 5099 to see various behaviour.");
-
         }
 
         private bool isValidTenantHost(IEnumerable<string> hosts, Uri distinguisherUri)

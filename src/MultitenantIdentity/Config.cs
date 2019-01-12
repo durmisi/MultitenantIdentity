@@ -130,7 +130,7 @@ namespace MultitenantIdentity
                 {
                     SubjectId = "1",
                     Username = "alice",
-                    Password = "password",
+                    Password = "supe8R1WrIs1U&H+T!11",
                     Claims = new []
                     {
                         new Claim("name", "Alice"),
@@ -141,7 +141,7 @@ namespace MultitenantIdentity
                 {
                     SubjectId = "2",
                     Username = "bob",
-                    Password = "password",
+                    Password = "supe8R1WrIs1U&H+T!11",
                     Claims = new []
                     {
                         new Claim("name", "Bob"),

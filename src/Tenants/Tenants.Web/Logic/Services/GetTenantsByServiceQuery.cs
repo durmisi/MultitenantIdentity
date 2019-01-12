@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using Dapper;
+using Newtonsoft.Json;
 using Tenants.Web.Logic.Base;
 using Tenants.Web.Logic.Dtos;
 using Tenants.Web.Logic.Utils;
@@ -33,6 +34,7 @@ namespace Tenants.Web.Logic.Services
                               SELECT 
                                     T.TenantGuid,
                                     T.[Name] as TenantName, 
+                                    TS.[Configuration],
                                     TSH.HostName
                               FROM Tenants T
                               inner join TenantServices TS on T.TenantId = TS.TenantId
@@ -60,6 +62,7 @@ namespace Tenants.Web.Logic.Services
                         {
                             TenantGuid = grouping.Key,
                             TenantName = tenant.TenantName,
+                            Configuration = tenant.Configuration,
                             Hosts = hosts
                         });
                     }
@@ -72,10 +75,11 @@ namespace Tenants.Web.Logic.Services
             {
                 public Guid TenantGuid { get; set; }
 
+                public string Configuration { get; set; }
+
                 public string TenantName { get; set; }
 
                 public string HostName { get; set; }
-
             }
         }
     }

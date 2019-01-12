@@ -60,7 +60,8 @@ namespace MultitenantIdentity
                             tenantServices.AddSingleton(_environment); // See https://github.com/aspnet/Mvc/issues/8340
                             tenantServices.AddWebEncoders();
 
-                            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+                            // var connectionString = _configuration.GetConnectionString("DefaultConnection");
+                            var connectionString = tenant.Configuration.ConnectionString;
                             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
                             tenantServices.AddDbContext<ApplicationDbContext>(opt =>
@@ -79,11 +80,6 @@ namespace MultitenantIdentity
                             // configure identity server with in-memory stores, keys, clients and resources
                             tenantServices.AddIdentityServer()
                                 .AddDeveloperSigningCredential()
-                                // .AddInMemoryIdentityResources(Config.GetIdentityResources())
-                                // .AddInMemoryApiResources(Config.GetApiResources())
-                                // .AddInMemoryPersistedGrants()
-                                // .AddInMemoryClients(Config.GetClients())
-                                // .AddTestUsers(Config.GetUsers())
                                 .AddConfigurationStore(opt =>
                                 {
                                     opt.ConfigureDbContext = builder =>
@@ -104,36 +100,48 @@ namespace MultitenantIdentity
                                 .AddAspNetIdentity<ApplicationUser>()
                                 ;
 
-
-                            tenantServices.AddAuthentication()
+                            var auth = tenantServices.AddAuthentication()
                                 .AddCookie("Cookies", opt =>
                                 {
+                                    opt.Cookie.Name = $"{tenant.Name.Replace(" ", "_")}_Cookie";
+                                });
 
-                                    opt.Cookie.Name = "Cookie";
 
+                            //tenant.Configuration.AuthenticationProviders.ForEach(ap =>
+                            //{
+                            //    if (ap.ProviderType  == "Google")
+                            //    {
+                            //        auth
+                            //            .AddGoogle("Google", opt =>
+                            //            {
+                            //                opt.SignInScheme = IdentityServerConstants
+                            //                    .ExternalCookieAuthenticationScheme;
 
-                                })
-                                    .AddGoogle("Google", opt =>
-                                    {
-                                        opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                            //                opt.ClientId =
+                            //                    "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com";
+                            //                opt.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
+                            //            });
+                            //    }
 
-                                        opt.ClientId = "434483408261-55tc8n0cs4ff1fe21ea8df2o443v2iuc.apps.googleusercontent.com";
-                                        opt.ClientSecret = "3gcoTrEDPPJ0ukn_aYYT6PWo";
-                                    })
-                                    .AddOpenIdConnect("oidc", "OpenID Connect", opt =>
-                                    {
-                                        opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                                        opt.SignOutScheme = IdentityServerConstants.SignoutScheme;
+                            //    if (ap.ProviderType == "OpenIdConnect")
+                            //    {
+                            //        auth.AddOpenIdConnect("oidc", "OpenID Connect", opt =>
+                            //        {
+                            //            opt.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                            //            opt.SignOutScheme = IdentityServerConstants.SignoutScheme;
 
-                                        opt.Authority = "https://demo.identityserver.io/";
-                                        opt.ClientId = "implicit";
+                            //            opt.Authority = "https://demo.identityserver.io/";
+                            //            opt.ClientId = "implicit";
 
-                                        opt.TokenValidationParameters = new TokenValidationParameters
-                                        {
-                                            NameClaimType = "name",
-                                            RoleClaimType = "role"
-                                        };
-                                    });
+                            //            opt.TokenValidationParameters = new TokenValidationParameters
+                            //            {
+                            //                NameClaimType = "name",
+                            //                RoleClaimType = "role"
+                            //            };
+                            //        });
+                            //    }
+                            //});
+
 
                         })
                         .AddPerRequestContainerMiddlewareServices() // services needed for per tenant container middleware.
@@ -143,7 +151,7 @@ namespace MultitenantIdentity
                     {
                         a.OnInitialiseTenantPipeline((b, c) =>
                         {
-                            // IdentityServerDatabaseInitialization.InitializeDatabase(c);
+                            IdentityServerDatabaseInitialization.InitializeDatabase(c);
 
                             //c.UseDeveloperExceptionPage();
                             c.UseStaticFiles();

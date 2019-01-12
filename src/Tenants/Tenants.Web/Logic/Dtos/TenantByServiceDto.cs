@@ -9,7 +9,8 @@ namespace Tenants.Web.Logic.Dtos
 
         public string TenantName { get; set; }
 
-        public List<string> Hosts { get; set; }
+        public string Configuration { get; set; }    
 
+        public List<string> Hosts { get; set; }
     }
 }
