@@ -2,7 +2,7 @@
 using System.Reflection;
 using CorrelationId;
 using Dotnettency;
-using IdentityServer4;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using MultitenantIdentity.Data;
 using Tenants.Web.Client;
 using Tenants.Web.Client.Options;
@@ -103,8 +102,16 @@ namespace MultitenantIdentity
                             var auth = tenantServices.AddAuthentication()
                                 .AddCookie("Cookies", opt =>
                                 {
-                                    opt.Cookie.Name = $"{tenant.Name.Replace(" ", "_")}_Cookie";
+                                    opt.Cookie.Name = tenant.Configuration.CookieName;
                                 });
+
+
+
+                            tenantServices.ConfigureApplicationCookie(opt =>
+                            {
+                                opt.Cookie.Name = "IDSRV_" + tenant.Configuration.CookieName;
+
+                            });
 
 
                             //tenant.Configuration.AuthenticationProviders.ForEach(ap =>

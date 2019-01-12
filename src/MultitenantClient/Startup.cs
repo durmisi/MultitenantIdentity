@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using CorrelationId;
 using Dotnettency;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Tenants.Web.Client;
+using Tenants.Web.Client.Framework;
+using Tenants.Web.Client.Options;
 
 namespace MultitenantClient
 {
@@ -35,6 +39,11 @@ namespace MultitenantClient
             _loggerFactory.AddConsole();
             ILogger<Startup> logger = _loggerFactory.CreateLogger<Startup>();
 
+            services.AddCorrelationId(); // Add Correlation ID support to ASP.NET Core
+
+            services
+                .AddPolicies(this._configuration) // Setup Polly policies.
+                .AddHttpClient<ITenantsClient, TenantsClient, TenantsClientOptions>(this._configuration, "TenantsClient");
 
             IServiceProvider serviceProvider = services.AddAspNetCoreMultiTenancy<Tenant>((options) =>
             {
@@ -59,57 +68,26 @@ namespace MultitenantClient
 
                             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-                            if (tenant.Name == "Moogle")
-                            {
-                                tenantServices.AddAuthentication(opt =>
+                            tenantServices.AddAuthentication(opt =>
                                 {
                                     opt.DefaultScheme = "Cookies";
                                     opt.DefaultChallengeScheme = "oidc";
                                 })
-                                 .AddCookie("Cookies", opt =>
-                                 {
-
-                                     opt.Cookie.Name = "Cookie";
-
-
-                                 })
+                                .AddCookie("Cookies", opt =>
+                                {
+                                    opt.Cookie.Name = tenant.Configuration.CookieName;
+                                })
                                 .AddOpenIdConnect("oidc", opt =>
                                 {
                                     opt.SignInScheme = "Cookies";
 
-                                    opt.Authority = "http://localhost:5000";
-                                    opt.RequireHttpsMetadata = false;
+                                    opt.Authority = tenant.Configuration.Authority;
+                                    opt.RequireHttpsMetadata = tenant.Configuration.RequireHttpsMetadata;
 
-                                    opt.ClientId = "mvc";
+                                    opt.ClientId = tenant.Configuration.ClientId;
                                     opt.SaveTokens = true;
                                 });
-                            }
-                            else
-                            {
-                                tenantServices.AddAuthentication(opt =>
-                                {
-                                    opt.DefaultScheme = "Cookies";
-                                    opt.DefaultChallengeScheme = "oidc";
-                                })
-                              .AddCookie("Cookies", opt =>
-                              {
 
-                                  opt.Cookie.Name = "Cookie2";
-
-
-                              })
-                              .AddOpenIdConnect("oidc", opt =>
-                              {
-                                  opt.SignInScheme = "Cookies";
-
-                                  opt.Authority = "http://localhost:5002";
-                                  opt.RequireHttpsMetadata = false;
-
-                                  opt.ClientId = "mvc2";
-                                  opt.SaveTokens = true;
-                              });
-
-                            }
                         })
                         .AddPerRequestContainerMiddlewareServices() // services needed for per tenant container middleware.
                         .AddPerTenantMiddlewarePipelineServices(); // services needed for per tenant middleware pipeline.
@@ -118,7 +96,7 @@ namespace MultitenantClient
                     {
                         a.OnInitialiseTenantPipeline((b, c) =>
                         {
-                          // c.UseHttpsRedirection();
+                            // c.UseHttpsRedirection();
                             c.UseStaticFiles();
                             c.UseCookiePolicy();
 
@@ -130,7 +108,6 @@ namespace MultitenantClient
                                     name: "default",
                                     template: "{controller=Home}/{action=Index}/{id?}");
                             });
-
                         });
                     });
 
@@ -153,7 +130,7 @@ namespace MultitenantClient
                 app.UseHsts();
             }
 
-            app = app.UseMultitenancy<Tenant>((options) =>
+            app.UseMultitenancy<Tenant>((options) =>
             {
                 options.UsePerTenantContainers();
                 options.UsePerTenantMiddlewarePipeline();

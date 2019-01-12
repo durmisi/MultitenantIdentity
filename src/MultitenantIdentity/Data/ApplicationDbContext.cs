@@ -17,7 +17,7 @@ namespace MultitenantIdentity.Data
 
     }
 
-    public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public sealed class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         private static bool _migrated;
 

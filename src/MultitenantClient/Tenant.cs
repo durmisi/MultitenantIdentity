@@ -12,5 +12,6 @@ namespace MultitenantClient
 
         public Guid TenantGuid { get; set; }
         public string Name { get; set; }
+        public MultitenantClientConfiguration Configuration { get; set; }
     }
 }
