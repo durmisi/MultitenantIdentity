@@ -1,9 +1,7 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-EXPOSE 5001
+EXPOSE 5000-6000
 
 FROM microsoft/dotnet:2.1-sdk-stretch AS build
 WORKDIR /src

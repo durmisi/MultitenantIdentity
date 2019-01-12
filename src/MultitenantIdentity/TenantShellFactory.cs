@@ -11,7 +11,7 @@ namespace MultitenantIdentity
             if (distinguisher.Uri.Port == 5000 || distinguisher.Uri.Port == 5001)
             {
                 Guid tenantId = Guid.Parse("049c8cc4-3660-41c7-92f0-85430452be22");
-                var tenant = new Tenant(tenantId, "Moogle");
+                var tenant = new Tenant(tenantId, "Tenant1");
                 // Also adding any additional Uri's that should be mapped to this same tenant.
                 var result = new TenantShell<Tenant>(tenant, new Uri("http://localhost:5000"),
                                                              new Uri("http://localhost:5001"));
@@ -21,7 +21,7 @@ namespace MultitenantIdentity
             if (distinguisher.Uri.Port == 5002)
             {
                 Guid tenantId = Guid.Parse("b17fcd22-0db1-47c0-9fef-1aa1cb09605e");
-                var tenant = new Tenant(tenantId, "Gicrosoft");
+                var tenant = new Tenant(tenantId, "Tenant2");
                 var result = new TenantShell<Tenant>(tenant);
                 return Task.FromResult(result);
             }

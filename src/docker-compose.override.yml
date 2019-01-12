@@ -18,12 +18,10 @@ services:
   multitenantidentity:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTPS_PORT=44383
+      - ASPNETCORE_URLS=https://+;http://+ # Default ports are 80 and 443
+      - ASPNETCORE_HTTPS_PORT=5000
     ports:
-      - "58836:80"
-      - "44383:443"
-      - "5001:5001"
+      - "5000-5020:5000-5020"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace MultitenantIdentity
 {
-    public class Config
+    public class Config2
     {
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
@@ -21,7 +21,7 @@ namespace MultitenantIdentity
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource("api2", "My API 2")
             };
         }
 
@@ -31,7 +31,7 @@ namespace MultitenantIdentity
             {
                 new Client
                 {
-                    ClientId = "client",
+                    ClientId = "client2",
 
                     // no interactive user, use the clientid/secret for authentication
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
@@ -43,52 +43,42 @@ namespace MultitenantIdentity
                     },
 
                     // scopes that client has access to
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { "api2" }
                 },
-
-                // resource owner password grant client
+                 // resource owner password grant client
                 new Client
                 {
-                    ClientId = "ro.client",
+                    ClientId = "ro.client2",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
-                    AllowedScopes = { "api1" }
+                    AllowedScopes = { "api2" }
                 },
                 new Client
                 {
-                    ClientId = "mvc",
+                    ClientId = "mvc2",
                     ClientName = "MVC Client",
                     AllowedGrantTypes = GrantTypes.Implicit,
 
-                    RequireConsent = false,
-
                     // where to redirect to after login
-                    RedirectUris = {
-                        "http://localhost:7000/signin-oidc",
-                        "http://localhost:7001/signin-oidc",
-                    },
+                    RedirectUris = { "http://localhost:7002/signin-oidc" },
 
                     // where to redirect to after logout
-                    PostLogoutRedirectUris = {
-                        "http://localhost:7000/signout-callback-oidc",
-                        "http://localhost:7001/signout-callback-oidc",
-                    },
+                    PostLogoutRedirectUris = { "http://localhost:7002/signout-callback-oidc" },
 
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
+                        IdentityServerConstants.StandardScopes.Profile
                     }
                 },
                 new Client
                 {
-                    ClientId = "mvc.hybrid",
-                    ClientName = "MVC Hybrid Client",
+                    ClientId = "mvc.hybrid2",
+                    ClientName = "MVC Hybrid Client 2",
                     AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
 
                     ClientSecrets =
@@ -98,28 +88,22 @@ namespace MultitenantIdentity
 
                     RedirectUris           =
                     {
-                        "http://localhost:8000/signin-oidc",
-                        "http://localhost:8001/signin-oidc",
-                        "http://localhost:8000",
-                        "http://localhost:8001",
+                        "http://localhost:8002/signin-oidc",
+                        "http://localhost:8002",
 
                     },
-                    PostLogoutRedirectUris =
-                    {
-                        "http://localhost:8000/signout-callback-oidc",
-                        "http://localhost:8001/signout-callback-oidc"
-                    },
+                    PostLogoutRedirectUris = { "http://localhost:8002/signout-callback-oidc" },
 
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
+                        "api2"
                     },
-                    AllowAccessTokensViaBrowser=true,
+                    AllowAccessTokensViaBrowser = true,
                     AllowOfflineAccess = true
                 }
-        };
+            };
         }
 
         public static List<TestUser> GetUsers()
@@ -131,6 +115,7 @@ namespace MultitenantIdentity
                     SubjectId = "1",
                     Username = "alice",
                     Password = "password",
+
                     Claims = new []
                     {
                         new Claim("name", "Alice"),
@@ -142,6 +127,7 @@ namespace MultitenantIdentity
                     SubjectId = "2",
                     Username = "bob",
                     Password = "password",
+
                     Claims = new []
                     {
                         new Claim("name", "Bob"),
