@@ -1,34 +1,74 @@
 ﻿using Dotnettency;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Tenants.Web.Client;
+using Tenants.Web.Logic.Dtos;
 
 namespace MultitenantIdentity
 {
     public class TenantShellFactory : ITenantShellFactory<Tenant>
     {
+        private readonly ITenantsClient _tenantsClient;
+        private ApiResponse<List<TenantByServiceDto>> _tenants;
+
+        public TenantShellFactory(ITenantsClient tenantsClient)
+        {
+            _tenantsClient = tenantsClient;
+        }
+
         public Task<TenantShell<Tenant>> Get(TenantDistinguisher distinguisher)
         {
-            if (distinguisher.Uri.Port == 5000 || distinguisher.Uri.Port == 5001)
+            var activeTenants = GetTenants();
+
+            foreach (var activeTenant in activeTenants)
             {
-                Guid tenantId = Guid.Parse("049c8cc4-3660-41c7-92f0-85430452be22");
-                var tenant = new Tenant(tenantId, "Tenant1");
-                // Also adding any additional Uri's that should be mapped to this same tenant.
-                var result = new TenantShell<Tenant>(tenant, new Uri("http://localhost:5000"),
-                                                             new Uri("http://localhost:5001"));
+                if(!isValidTenantHost(activeTenant.Hosts, distinguisher.Uri))
+                    continue;
+
+                var tenant = new Tenant(activeTenant.TenantGuid, activeTenant.TenantName);
+                var result = new TenantShell<Tenant>(tenant, 
+                    activeTenant.Hosts
+                        .Select(host => new TenantDistinguisher(new Uri(host)))
+                        .ToArray()
+                );
+
                 return Task.FromResult(result);
             }
 
-            if (distinguisher.Uri.Port == 5002)
+            throw new NotImplementedException("Please make request on ports 5000 - 5099 to see various behaviour.");
+
+        }
+
+        private bool isValidTenantHost(IEnumerable<string> hosts, Uri distinguisherUri)
+        {
+            foreach (var host in hosts)
             {
-                Guid tenantId = Guid.Parse("b17fcd22-0db1-47c0-9fef-1aa1cb09605e");
-                var tenant = new Tenant(tenantId, "Tenant2");
-                var result = new TenantShell<Tenant>(tenant);
-                return Task.FromResult(result);
+                var uri = new Uri(host);
+
+                if (uri.Host != distinguisherUri.Host)
+                {
+                   continue;
+                }
+
+                if (uri.Port != distinguisherUri.Port)
+                {
+                    continue;
+                }
+
+                return true;
             }
 
+            return false;
+        }
 
-            throw new NotImplementedException("Please make request on ports 5000 - 5003 to see various behaviour.");
+        private IEnumerable<TenantByServiceDto> GetTenants()
+        {
+            if (_tenants == null)
+                _tenants = _tenantsClient.GetTenantsByService("Identity Server").Result;
 
+            return _tenants.Result;
         }
     }
 }

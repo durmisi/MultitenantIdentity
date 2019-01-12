@@ -15,10 +15,26 @@ namespace Tenants.Web.Api
             _messages = messages;
         }
 
-        [HttpGet()]
+        /// <summary>
+        /// api/tenants
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public IActionResult GetList()
         {
             var list = _messages.Dispatch(new GetListQuery());
+            return Ok(list);
+        }
+
+        /// <summary>
+        /// api/tenants?appServiceName={appServiceName}
+        /// </summary>
+        /// <param name="appServiceName"></param>
+        /// <returns></returns>
+        [HttpGet("{appServiceName}")]
+        public IActionResult GetServices(string appServiceName)
+        {
+            var list = _messages.Dispatch(new GetTenantsByServiceQuery(appServiceName));
             return Ok(list);
         }
 

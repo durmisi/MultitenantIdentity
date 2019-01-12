@@ -17,6 +17,7 @@ namespace Tenants.Web.Client
     public interface ITenantsClient
     {
         Task<ApiResponse<List<TenantDto>>> GetTenants();
+        Task<ApiResponse<List<TenantByServiceDto>>> GetTenantsByService(string identityServer);
     }
 
     public class TenantsClient : ITenantsClient
@@ -31,6 +32,13 @@ namespace Tenants.Web.Client
             var response = await this._httpClient.GetAsync("/api/tenants");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsAsync<ApiResponse<List<TenantDto>>>();
+        }
+
+        public async Task<ApiResponse<List<TenantByServiceDto>>> GetTenantsByService(string appServiceName)
+        {
+            var response = await this._httpClient.GetAsync($"/api/tenants/{appServiceName}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsAsync<ApiResponse<List<TenantByServiceDto>>>();
         }
     }
 }
